@@ -1,9 +1,11 @@
 <script setup>
 import MapProjection from "./components/MapProjection.vue";
+import SpatialConflicts from "./components/SpatialConflicts.vue";
 </script>
 
 <template>
-  <MapProjection/>
+  <SpatialConflicts />
+<!--  <MapProjection/>-->
 </template>
 
 <style scoped>
