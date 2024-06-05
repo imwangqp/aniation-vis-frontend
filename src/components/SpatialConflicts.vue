@@ -3,8 +3,8 @@ import {onMounted} from "vue";
 import * as d3 from "d3";
 import _ from 'lodash'
 
-const geoJsonPath = '../assets/routes/spatial_conflicts.geojson'
-const backgeoJsonPath = '../assets/routes/output1.geojson'
+const geoJsonPath = '../assets/routes/output_file.geojson'
+const backgeoJsonPath = '../assets/routes/clean_route.geojson'
 const width = 800,
     height = 600
 
@@ -29,14 +29,15 @@ onMounted(()=>{
 
 function splitNumber(string) {
   const regex = /\(([^)]+)\)/;
+  console.log(string)
   return _.map(_.split(string.match(regex)[1], ', '), item=>{
     const [x,y] = _.split(item, ' ').map(Number)
     return [x,y]
   })
 }
 function drawBackground(geojsonData, svg) {
-  let max_count = _.maxBy(geojsonData.features,o=>o['properties']['count'])['properties']['count'],
-      min_count = _.minBy(geojsonData.features,o=>o['properties']['count'])['properties']['count']
+  let max_count = _.maxBy(geojsonData.features,o=>o['properties']['COUNT'])['properties']['COUNT'],
+      min_count = _.minBy(geojsonData.features,o=>o['properties']['COUNT'])['properties']['COUNT']
 
   const projection = d3.geoIdentity().reflectY(true)
       .fitSize([width, height], geojsonData);
@@ -82,19 +83,6 @@ function drawBackground(geojsonData, svg) {
       .attr('stroke-width', d=>widthScale(d.properties.count))
 }
 function drawMap(geojsonData, svg) {
-  _.forEach(geojsonData.features, item=>{
-    if (item.properties['TYPE'] === 'Point'){
-      item.geometry = {
-        "type": item.properties['TYPE'],
-        "coordinates": splitNumber(item.properties.geom)[0]
-      }
-    }else {
-      item.geometry = {
-        "type": item.properties['TYPE'],
-        "coordinates": splitNumber(item.properties.geom)
-      }
-    }
-  })
   let max_count = _.maxBy(geojsonData.features,o=>o['properties']['geom_count'])['properties']['geom_count'],
       min_count = _.minBy(geojsonData.features,o=>o['properties']['geom_count'])['properties']['geom_count']
   let pointColorScale = d3.scaleLinear([min_count,max_count], ['#fdcdac', '#cbd5e8']),
@@ -106,7 +94,6 @@ function drawMap(geojsonData, svg) {
 // 创建一个地理路径生成器
   const path = d3.geoPath().projection(projection);
 
-console.log(_.filter(geojsonData.features, item=>item['properties']['TYPE']!=='Point'))
   svg.selectAll('.line')
       .data(geojsonData.features)
       .enter()

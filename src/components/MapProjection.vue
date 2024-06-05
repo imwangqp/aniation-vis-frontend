@@ -3,7 +3,7 @@ import {onMounted} from "vue";
 import * as d3 from "d3";
 import _ from 'lodash'
 
-const geoJsonPath = '../assets/routes/output1.geojson'
+const geoJsonPath = '../assets/routes/output_file.geojson'
 
 onMounted(()=>{
   const geoJSONUrl = new URL(geoJsonPath, import.meta.url).href;
